@@ -1,9 +1,9 @@
-package org.example.extractToJson;
+package org.example.extractFromJson.predtest;
 
 public class Root {
 
+    private static String token;
     private Data data;
-    private String token;
 
     public Data getData() {
         return data;
@@ -13,20 +13,18 @@ public class Root {
         this.data = data;
     }
 
-    public String getToken() {
+    public static String getToken() {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public static void setToken(String token) {
+        Root.token = token;
     }
 
-    public Root(Data data, String token) {
+    public Root(Data data) {
         this.data = data;
-        this.token = token;
     }
 
     public Root() {
-
     }
 }

@@ -1,4 +1,4 @@
-package org.example.extractToJson;
+package org.example.extractFromJson.predtest;
 
             /*
                   Класс POJO с данными для АВТОРИЗАЦИИ!
