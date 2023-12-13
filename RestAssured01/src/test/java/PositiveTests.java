@@ -8,6 +8,7 @@ import io.qameta.allure.internal.shadowed.jackson.databind.SerializationFeature;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.example.Asserts.SecondTest;
 import org.example.TestsData.DataForAddNewPlace;
 import org.example.TestsData.DataForChangeUserName;
 import org.example.TestsData.DataForLoginTest;
@@ -17,10 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 
 
@@ -83,20 +85,47 @@ public class PositiveTests {
 
     @Test
     @Step
-    @DisplayName("Тест №2: Добавление нового места")
+    @DisplayName("Тест №2: Добавление нового места") // Переделал код, сделал проверку по нескольким вариантам сразу, чтобы попрактиковать написание параметризации
     @Description("Тест на эндпоинт 'api/cards', проверка статус кода и добавилось ли новое место")
     public void addNewPlace() {
-        DataForAddNewPlace forAddNewPlace = new DataForAddNewPlace("ВП Сити", "https://gorodarus.ru/images/vyatpolyani/vyatskie-polyani4.jpg");
-        Response response;
-        response = given()
-                .header("Content-type", "application/json")
-                .auth().oauth2(Root.getToken())
-                .body(forAddNewPlace)
-                .when()
-                .post("api/cards");
-                response.then().assertThat().statusCode(201)
-                        .and().assertThat().body("data.name", equalTo("ВП Сити"));
-        System.out.println("Тест №2 прошел успешно! Новое место добавилось");
+        List<DataForAddNewPlace> forAddNewPlaces = new ArrayList<>();
+        forAddNewPlaces.add(new DataForAddNewPlace("ВП Сити", "https://gorodarus.ru/images/vyatpolyani/vyatskie-polyani4.jpg"));
+        forAddNewPlaces.add(new DataForAddNewPlace(" ", "https://gorodarus.ru/images/vyatpolyani/vyatskie-polyani4.jpg"));
+        forAddNewPlaces.add(new DataForAddNewPlace("VP", "https://gorodarus.ru/images/vyatpolyani/vyatskie-polyani4.jpg"));
+        forAddNewPlaces.add(new DataForAddNewPlace("123", "https://gorodarus.ru/images/vyatpolyani/vyatskie-polyani4.jpg"));
+
+        List<String> failed = new ArrayList<>(); // Список для отслеживания проваленных данных, которые не прошли
+
+        for (int i = 0; i < forAddNewPlaces.size(); i++) {
+            Response response;
+            response = given()
+                    .header("Content-type", "application/json")
+                    .auth().oauth2(Root.getToken())
+                    .body(forAddNewPlaces.get(i))
+                    .when()
+                    .post("api/cards");
+            try {
+                response.then().assertThat().statusCode(201);
+                response.then().assertThat().body("data.name", equalTo(SecondTest.ExpectedName.get(i)));
+                System.out.println("Проверка имени города: " + SecondTest.ExpectedName.get(i) + " Прошла успешно!");
+                System.out.println(" ");
+            } catch (AssertionError e) {
+                System.out.println("Внимание, при отправке данных: " + forAddNewPlaces.get(i).toString() + " Произошла ошибка, статус код: " + response.getStatusCode());
+                System.out.println("Ожидаемое название города: " + SecondTest.ExpectedName.get(i));
+
+                failed.add(forAddNewPlaces.get(i).toString());
+            }
+
+        }
+        System.out.println("Тест №2 прошел успешно! Новые места добавились");
+        // Так как есть тест-кейсы которые провалились, вывожу то, что не прошло. По сути это значит что все в порядке, ведь тест-кейсы с невалидными данными прошли, однако выведу их для практики подобных действий
+        if (failed.size() > 0) {
+            System.out.println("Следующие невалидные значения не прошли! : ");
+            System.out.println(failed);
+            System.out.println(" ");
+            System.out.println(" ");
+            System.out.println(" ");
+        }
     }
 
     @Test

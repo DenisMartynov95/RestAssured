@@ -25,4 +25,12 @@ public class DataForAddNewPlace {
         this.name = name;
         this.link = link;
     }
+
+    @Override
+    public String toString() {
+        return "DataForAddNewPlace{" +
+                "name='" + name + '\'' +
+                ", link='" + link + '\'' +
+                '}';
+    }
 }
