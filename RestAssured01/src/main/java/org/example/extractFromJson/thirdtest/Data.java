@@ -62,17 +62,4 @@ public class Data {
         this.createdAt = createdAt;
     }
 
-    public Data(ArrayList<String> likes, String _id, String name, String link, String owner, String createdAt) {
-        this.likes = likes;
-        this._id = _id;
-        this.name = name;
-        this.link = link;
-        this.owner = owner;
-        this.createdAt = createdAt;
-    }
-
-    public Data() {
-
-    }
-
 }

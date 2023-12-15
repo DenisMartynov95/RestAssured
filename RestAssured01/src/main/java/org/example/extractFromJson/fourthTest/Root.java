@@ -1,7 +1,6 @@
-package org.example.extractFromJson.thirdtest;
+package org.example.extractFromJson.fourthTest;
 
 public class Root {
-
     private Data data;
 
     public Data getData() {
@@ -11,6 +10,5 @@ public class Root {
     public void setData(Data data) {
         this.data = data;
     }
-
 
 }

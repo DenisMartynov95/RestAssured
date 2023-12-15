@@ -10,10 +10,12 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.example.Asserts.SecondTest;
 import org.example.TestsData.DataForAddNewPlace;
+import org.example.TestsData.DataForChangeAvatar;
 import org.example.TestsData.DataForChangeUserName;
 import org.example.TestsData.DataForLoginTest;
 import org.example.extractFromJson.predtest.Root;
 import org.example.extractFromJson.thirdtest.Data;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -131,26 +133,54 @@ public class PositiveTests {
     @Test
     @Step
     @DisplayName("Тест №3: Постановка лайка")
-    @Description("Тест на эндпоинт 'api/cards/64b6a97a453cdc0042ff3d44/likes', проверка статус кода и валидного количества лайков")
+    @Description("Тест на эндпоинт 'api/cards/64b6d4c0434244003d277aa6/likes', проверка статус кода и валидного количества лайков")
     public void addLikeOnPlace() {
         Response response;
         response = given()
                 .header("Content-type", "application/json")
                 .auth().oauth2(Root.getToken())
                 .when()
-                .put("api/cards/64b6a97a453cdc0042ff3d44/likes");
+                .put("api/cards/64b6d4c0434244003d277aa6/likes");
+        response.then().assertThat().statusCode(200);
+        org.example.extractFromJson.thirdtest.Root root = response.body().as(org.example.extractFromJson.thirdtest.Root.class);  // Такое длинное название, так как указан явный путь до нужного класса, тк Root есть в другом тесте и он указывает на другое
+
+        assertNotNull(root);
+                            /*
+                                   Логирую то, как сработала десериализация
+                                                                                      */
+                                    Gson gson = new Gson();
+                                    String json = gson.toJson(root);
+                                    System.out.println("В итоге приходящий ответ был распакован и содержит следующее :  " + json);
+
+        // Начинаю проверку поставленного лайка
+        ArrayList<String> checkLikes = root.getData().getLikes();
+        System.out.println(checkLikes.size());
+        if (checkLikes.size() == 7) {
+            System.out.println("Тест №3 завершился успешно! Лайк был поставлен");
+            System.out.println("Количество лайков: " + checkLikes.size());
+        }
+    }
+
+    @Test
+    @Step
+    @DisplayName("Тест №4: Сменить аватарку")
+    @Description("Тест на эндпоинт 'api/users/me/avatar'")
+    public void changeAvatar() {
+        DataForChangeAvatar forChangeAvatar = new DataForChangeAvatar();
+        Response response = given()
+                .header("Content-type", "application/json")
+                .auth().oauth2(Root.getToken())
+                .body(forChangeAvatar)
+                .when()
+                .patch("api/users/me/avatar");
         response.then().assertThat().statusCode(200);
 
-        Root root = response.then().extract().body().as(Root.class); // Сначала заполню класс Root приходящим JSON
-        assertNotNull(root); // Проверяю что в итоге данный класс заполнен пришедшим JSON
+        org.example.extractFromJson.fourthTest.Root root = response.body().as(org.example.extractFromJson.fourthTest.Root.class);
 
-        System.out.println(root.getData().toString()); // ПОКА НЕ РАБОТАЕТ!, НУЖНО ПРИДУМАТЬ КАК ПРОВЕРИТЬ, ЧТО ПЕРЕМЕННЫЕ В DATA ЗАПОЛНЕНЫ И РАБОТАТЬ С getLikes() у Data, сравнивая с _id в ROot
-
-//        // Начинаю проверку только определенного индекса, который записался в лист likes
-//        ArrayList<String> checkLikes = data.getLikes();
-//        System.out.println(checkLikes);
-
-//                .and().assertThat().body("data.")
+        String actual = forChangeAvatar.getAvatar();
+        String expected = root.getData().getAvatar();
+        Assert.assertTrue(expected.equals(actual));
+        System.out.println("Тест №4 прошел успешно, аватарка была изменена корректно!");
     }
 }
 
