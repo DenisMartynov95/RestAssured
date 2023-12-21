@@ -1,0 +1,14 @@
+org\example\extractFromJson\predtest\Data.class
+org\example\extractFromJson\Root.class
+org\example\extractFromJson\fourthTest\Data.class
+org\example\TestsData\DataForAddNewPlace.class
+org\example\TestsData\DataForChangeUserName.class
+org\example\TestsData\DataForChangeAvatar.class
+org\example\extractFromJson\Data.class
+org\example\extractFromJson\fourthTest\Root.class
+org\example\extractFromJson\thirdtest\Root.class
+org\example\Main.class
+org\example\Asserts\SecondTest.class
+org\example\extractFromJson\thirdtest\Data.class
+org\example\extractFromJson\predtest\Root.class
+org\example\TestsData\DataForLoginTest.class
